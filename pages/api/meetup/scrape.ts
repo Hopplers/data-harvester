@@ -61,7 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Get availability
         const availabilityButton = await driver.findElement(By.xpath('//*[@id="main"]/div[4]/div/div/div[2]/div/div[2]/button')).getAttribute('data-testid');
-        var availability = null;
+        let availability = null;
         if (availabilityButton == "waitlist-btn") {
             availability = "full";
         } else if (availabilityButton == "attend-irl-btn") {
