@@ -17,11 +17,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const meetupUrlPattern = /^https:\/\/www\.meetup\.com\/[^/]+\/events\/\d+\/$/;
 
     if (!meetupUrlPattern.test(url)) { 
-    return res.status(400).json({ 
-        message: 'URL format error', 
-        body: 'Format: https://meetup.com/{hostName}/events/{eventNumber}' 
-    });
-}
+        return res.status(400).json({ 
+            message: 'URL format error', 
+            body: 'Format: https://meetup.com/{hostName}/events/{eventNumber}/' 
+        });
+    }
     let driver = null;
 
     try {
