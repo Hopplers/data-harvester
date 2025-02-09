@@ -8,13 +8,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    const { url } = req.body;
+    let { url } = req.body;
 
     if (!url) {
         return res.status(400).json({ message: 'URL is required' });
-    } 
+    }
+
+    url = url.split('?')[0];
     
-    const meetupUrlPattern = /^https:\/\/www\.meetup\.com\/[^/]+\/events\/\d+\/$/;
+    const meetupUrlPattern = /^https:\/\/www\.meetup\.com\/[^/]+\/events\/\d+\/?$/;
 
     if (!meetupUrlPattern.test(url)) { 
         return res.status(400).json({ 
@@ -72,7 +74,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Get image data
         const banner = await driver.findElement(By.xpath('//picture[@data-testid="event-description-image"]//img'));
-        const banner_url = await banner.getAttribute('src');
+        let banner_url = await banner.getAttribute('src');
+        banner_url = banner_url.split('?')[0];
         const banner_alt = await banner.getAttribute('alt');
 
         res.status(200).json({ title, host, date, time, venue, fee, availability, url, banner_url, banner_alt });
