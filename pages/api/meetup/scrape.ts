@@ -81,7 +81,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ title, host, date, time, venue, fee, availability, url, banner_url, banner_alt });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'An error occurred while scraping' });
+        res.status(500).json({ error: 'An error occurred while scraping', body: error });
     } finally {
         if (driver) {
             await driver.quit();
