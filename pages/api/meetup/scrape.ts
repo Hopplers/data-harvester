@@ -36,6 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             .setChromeOptions(options)
             .build();
 
+        throw new Error("testing for deployment error");
         // Navigate to a website
         await driver.get(url);
 
