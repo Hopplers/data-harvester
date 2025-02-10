@@ -20,7 +20,6 @@ export async function POST(request: Request) {
         );
     }
 
-    let browser;
     try {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
