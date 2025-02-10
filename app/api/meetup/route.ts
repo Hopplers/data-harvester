@@ -23,28 +23,28 @@ export async function POST(request: Request) {
     try {
         const browser = await chromium.launch({ chromiumSandbox: false });
         const page = await browser.newPage();
-        await page.goto(cleanedUrl, { waitUntil: "domcontentloaded" });
+        await page.goto(cleanedUrl, { waitUntil: "domcontentloaded", timeout: 30000 });
 
         // Extract event details
-        const title = await page.$eval("h1", (el) => el.innerText.trim());
+        const title = await page.$eval("h1", (el: HTMLElement) => el.innerText.trim());
         const host = await page.$eval(
             "#event-group-link > div > div.ml-4 > div.text-sm.font-medium.leading-5",
-            (el) => el.innerText.trim()
+            (el: HTMLElement) => el.innerText.trim()
         );
 
         // Extract date & time
-        const dateTime = await page.$eval("time.block", (el) => el.innerText.trim());
+        const dateTime = await page.$eval("time.block", (el: HTMLElement) => el.innerText.trim());
         const [dateString, time] = dateTime.split("\n");
         const date = new Date(new Date(dateString).getTime() + 8 * 60 * 60 * 1000);
 
         // Extract venue
         const venue = await page.$eval(
             'a[data-testid="venue-name-link"]',
-            (el) => el.innerText.trim()
+            (el: HTMLElement) => el.innerText.trim()
         );
 
         // Extract fee
-        const fee = await page.$eval('div[data-event-label="action-bar"]', (container) => {
+        const fee = await page.$eval('div[data-event-label="action-bar"]', (container: HTMLElement) => {
             return container.innerText.includes('FREE') ? 'FREE' : 'PAID';
         });
 
@@ -68,8 +68,8 @@ export async function POST(request: Request) {
 
         // Extract banner image
         const bannerElement = await page.$('picture[data-testid="event-description-image"] img');
-        const banner_url = bannerElement ? await bannerElement.evaluate((el) => el.src.split("?")[0]) : null;
-        const banner_alt = bannerElement ? await bannerElement.evaluate((el) => el.alt) : null;
+        const banner_url = bannerElement ? await bannerElement.evaluate((el: HTMLImageElement) => el.src.split("?")[0]) : null;
+        const banner_alt = bannerElement ? await bannerElement.evaluate((el: HTMLImageElement) => el.alt) : null;
 
         await browser.close();
 
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
     } catch (error) {
         console.error('Scraping error:', error);
         return Response.json(
-            { error: "An error occurred while scraping", message: error.toString() },
+            { error: "An error occurred while scraping", message: error instanceof Error ? error.message : String(error) },
             { status: 500 }
         );
     }
