@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer";
+import { chromium } from "playwright";
 
 export async function POST(request: Request) {
     const { url } = await request.json();
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     }
 
     try {
-        const browser = await puppeteer.launch();
+        const browser = await chromium.launch({ chromiumSandbox: false });
         const page = await browser.newPage();
         await page.goto(cleanedUrl, { waitUntil: "domcontentloaded" });
 
@@ -78,9 +78,9 @@ export async function POST(request: Request) {
             { status: 200 }
         );
     } catch (error) {
-        console.error(error);
+        console.error('Scraping error:', error);
         return Response.json(
-            { error: "An error occurred while scraping", message: error },
+            { error: "An error occurred while scraping", message: error.toString() },
             { status: 500 }
         );
     }
