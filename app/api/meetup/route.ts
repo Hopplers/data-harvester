@@ -1,4 +1,5 @@
-import { chromium } from "playwright";
+import { chromium } from "playwright-core";
+import chromiumExecutable from "@sparticuz/chromium";
 
 export async function POST(request: Request) {
     const { url } = await request.json();
@@ -21,7 +22,12 @@ export async function POST(request: Request) {
     }
 
     try {
-        const browser = await chromium.launch({ chromiumSandbox: false });
+        // ✅ Use prebuilt Chromium for Vercel
+        const browser = await chromium.launch({
+            args: chromiumExecutable.args,
+            executablePath: await chromiumExecutable.executablePath(),
+        });
+
         const page = await browser.newPage();
         await page.goto(cleanedUrl, { waitUntil: "domcontentloaded", timeout: 30000 });
 
