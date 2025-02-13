@@ -214,9 +214,21 @@ async function scrapeLuma(cleanedUrl: string) {
       venue = "Register to See Venue";
     }
 
+    let fee = "FREE";
+
+    const ticketElementText = await page.$eval(
+      ".jsx-2770533236",
+      (el: HTMLElement) => el.innerText.trim()
+    );
+
+    if (ticketElementText == "Get Tickets") {
+      fee = "PAID";
+    }
+
     let availability = "unknown";
 
     const registationClosedElement = await page.$(".jsx-236388194");
+
     const statusElement = await page.$(".jsx-825713363.title");
 
     if (registationClosedElement) {
@@ -239,7 +251,10 @@ async function scrapeLuma(cleanedUrl: string) {
         ".jsx-681273248 button div.label",
         (el: HTMLElement) => el.innerText.trim()
       );
-      if (registerButtonText == "Register") {
+      if (
+        registerButtonText == "Register" ||
+        registerButtonText == "Get Ticket"
+      ) {
         availability = "available";
       }
     }
@@ -261,6 +276,7 @@ async function scrapeLuma(cleanedUrl: string) {
         date,
         time,
         venue,
+        fee,
         availability,
         url: cleanedUrl,
         banner_url,
