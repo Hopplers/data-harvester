@@ -169,13 +169,13 @@ async function scrapeLuma(cleanedUrl: string) {
 
   try {
     // ✅ Use prebuilt Chromium for Vercel
-    // const browser = await chromium.launch({
-    //     args: chromiumExecutable.args,
-    //     executablePath: await chromiumExecutable.executablePath(),
-    // });
+    const browser = await chromium.launch({
+         args: chromiumExecutable.args,
+         executablePath: await chromiumExecutable.executablePath(),
+     });
 
     // For local
-    const browser = await chromium.launch({ chromiumSandbox: false });
+    // const browser = await chromium.launch({ chromiumSandbox: false });
 
     const page = await browser.newPage();
     await page.goto(cleanedUrl, {
