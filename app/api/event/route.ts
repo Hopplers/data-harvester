@@ -1,5 +1,5 @@
 import { chromium } from "playwright-core";
-// import chromiumExecutable from "@sparticuz/chromium";
+import chromiumExecutable from "@sparticuz/chromium";
 
 export async function POST(request: Request) {
   const { url } = await request.json();
@@ -50,14 +50,14 @@ async function scrapeMeetup(cleanedUrl: string) {
   }
 
   try {
-    // ✅ Use prebuilt Chromium for Vercel
-    // const browser = await chromium.launch({
-    //     args: chromiumExecutable.args,
-    //     executablePath: await chromiumExecutable.executablePath(),
-    // });
+    ✅ Use prebuilt Chromium for Vercel
+    const browser = await chromium.launch({
+        args: chromiumExecutable.args,
+        executablePath: await chromiumExecutable.executablePath(),
+    });
 
     // For local
-    const browser = await chromium.launch({ chromiumSandbox: false });
+    // const browser = await chromium.launch({ chromiumSandbox: false });
 
     const page = await browser.newPage();
 
