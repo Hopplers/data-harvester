@@ -50,10 +50,10 @@ async function scrapeMeetup(cleanedUrl: string) {
   }
 
   try {
-    ✅ Use prebuilt Chromium for Vercel
+    // ✅ Use prebuilt Chromium for Vercel
     const browser = await chromium.launch({
-        args: chromiumExecutable.args,
-        executablePath: await chromiumExecutable.executablePath(),
+      args: chromiumExecutable.args,
+      executablePath: await chromiumExecutable.executablePath(),
     });
 
     // For local
