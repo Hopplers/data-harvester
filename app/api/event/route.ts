@@ -170,9 +170,9 @@ async function scrapeLuma(cleanedUrl: string) {
   try {
     // ✅ Use prebuilt Chromium for Vercel
     const browser = await chromium.launch({
-         args: chromiumExecutable.args,
-         executablePath: await chromiumExecutable.executablePath(),
-     });
+      args: chromiumExecutable.args,
+      executablePath: await chromiumExecutable.executablePath(),
+    });
 
     // For local
     // const browser = await chromium.launch({ chromiumSandbox: false });
@@ -259,7 +259,7 @@ async function scrapeLuma(cleanedUrl: string) {
       }
     }
 
-    const bannerElement = await page.$("img");
+    const bannerElement = await page.$(".jsx-4068354093 img");
 
     const banner_url = bannerElement
       ? await bannerElement.evaluate((el: HTMLImageElement) => el.src)
