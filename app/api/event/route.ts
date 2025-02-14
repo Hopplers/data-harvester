@@ -115,6 +115,7 @@ async function scrapeMeetup(cleanedUrl: string) {
       "attend-irl-btn": "available",
       "pass-event-btn": "event_expired",
       "rsvp-not-open-btn": "not_available",
+      "attend-online-btn": "available_online",
     };
 
     let availability = "unknown";
