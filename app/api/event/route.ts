@@ -83,10 +83,25 @@ async function scrapeMeetup(cleanedUrl: string) {
 
     const date = new Date(new Date(dateString).getTime() + 8 * 60 * 60 * 1000);
 
-    const venue = await page.$eval(
-      'a[data-testid="venue-name-link"]',
-      (el: HTMLElement) => el.innerText.trim()
-    );
+    const venueElement = await page.$("a[data-testid='venue-name-link']");
+
+    const onlineElement = await page.$("a[data-testid='venue-name-value']");
+
+    let venue;
+
+    if (venueElement) {
+      venue = await page.$eval(
+        'a[data-testid="venue-name-link"]',
+        (el: HTMLElement) => el.innerText.trim()
+      );
+    } else if (onlineElement) {
+      venue = await page.$eval(
+        'a[data-testid="venue-name-value"]',
+        (el: HTMLElement) => el.innerText.trim()
+      );
+    } else {
+      venue = "Unable to find venue";
+    }
 
     const fee = await page.$eval(
       'div[data-event-label="action-bar"]',
