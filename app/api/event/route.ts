@@ -85,19 +85,19 @@ async function scrapeMeetup(cleanedUrl: string) {
 
     const venueElement = await page.$("a[data-testid='venue-name-link']");
 
-    const onlineElement = await page.$("a[data-testid='venue-name-value']");
+    const onlineElement = await page.$("div[data-testid='venue-name-value']");
 
     let venue;
 
     if (venueElement) {
-      venue = await page.$eval(
-        'a[data-testid="venue-name-link"]',
-        (el: HTMLElement) => el.innerText.trim()
+      venue = await page.evaluate(
+        (el) => (el as HTMLElement).innerText.trim(),
+        venueElement
       );
     } else if (onlineElement) {
-      venue = await page.$eval(
-        'a[data-testid="venue-name-value"]',
-        (el: HTMLElement) => el.innerText.trim()
+      venue = await page.evaluate(
+        (el) => (el as HTMLElement).innerText.trim(),
+        onlineElement
       );
     } else {
       venue = "Unable to find venue";
