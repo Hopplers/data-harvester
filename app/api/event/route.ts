@@ -52,7 +52,7 @@ async function scrapeMeetup(cleanedUrl: string) {
   try {
     // ✅ Use prebuilt Chromium for Vercel
     const browser = await chromium.launch({
-      args: chromiumExecutable.args,
+      args: [...chromiumExecutable.args, "--lang=ms-MY"],
       executablePath: await chromiumExecutable.executablePath(),
     });
 
@@ -186,7 +186,7 @@ async function scrapeLuma(cleanedUrl: string) {
   try {
     // ✅ Use prebuilt Chromium for Vercel
     const browser = await chromium.launch({
-      args: chromiumExecutable.args,
+      args: [...chromiumExecutable.args, "--lang=ms-MY"],
       executablePath: await chromiumExecutable.executablePath(),
     });
 
