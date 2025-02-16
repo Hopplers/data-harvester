@@ -1,5 +1,6 @@
 import { chromium } from 'playwright-core';
 import chromiumExecutable from '@sparticuz/chromium';
+import { parse } from 'date-fns';
 
 export async function POST(request: Request) {
   const { url } = await request.json();
@@ -214,6 +215,15 @@ async function scrapeLuma(cleanedUrl: string) {
       el.innerText.trim()
     );
 
+    const currentYear = new Date().getFullYear();
+
+    // Parse the date with the current year
+    const parsedDate = parse(
+      `${date}, ${currentYear}`,
+      'EEEE, MMMM d, yyyy',
+      new Date()
+    );
+
     const time = await page.$eval('.jsx-2370077516.desc', (el: HTMLElement) =>
       el.innerText.trim()
     );
@@ -289,7 +299,7 @@ async function scrapeLuma(cleanedUrl: string) {
       {
         title,
         host,
-        date,
+        date: parsedDate,
         time,
         venue,
         fee,
