@@ -82,7 +82,7 @@ async function scrapeMeetup(cleanedUrl: string) {
 
     const [dateString, time] = dateTime.split('\n');
 
-    const date = new Date(dateString).getTime();
+    const date = new Date(dateString);
 
     const venueElement = await page.$("a[data-testid='venue-name-link']");
 
