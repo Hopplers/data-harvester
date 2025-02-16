@@ -1,34 +1,34 @@
-import { chromium } from "playwright-core";
-import chromiumExecutable from "@sparticuz/chromium";
+import { chromium } from 'playwright-core';
+import chromiumExecutable from '@sparticuz/chromium';
 
 export async function POST(request: Request) {
   const { url } = await request.json();
 
   if (!url) {
-    return Response.json({ error: "URL is required" }, { status: 400 });
+    return Response.json({ error: 'URL is required' }, { status: 400 });
   }
 
-  const cleanedUrl = url.split("?")[0];
+  const cleanedUrl = url.split('?')[0];
 
   try {
-    if (cleanedUrl.includes("meetup.com")) {
+    if (cleanedUrl.includes('meetup.com')) {
       return await scrapeMeetup(cleanedUrl);
-    } else if (cleanedUrl.includes("lu.ma")) {
+    } else if (cleanedUrl.includes('lu.ma')) {
       return await scrapeLuma(cleanedUrl);
     } else {
       return Response.json(
         {
           error:
-            "This function only supports meetup and luma links for now, do expect more updates to come",
+            'This function only supports meetup and luma links for now, do expect more updates to come',
         },
         { status: 400 }
       );
     }
   } catch (error) {
-    console.error("Scraping error:", error);
+    console.error('Scraping error:', error);
     return Response.json(
       {
-        error: "An error occurred while scraping",
+        error: 'An error occurred while scraping',
         message: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
@@ -42,8 +42,8 @@ async function scrapeMeetup(cleanedUrl: string) {
   if (!meetupUrlPattern.test(cleanedUrl)) {
     return Response.json(
       {
-        error: "URL format error",
-        message: "Format: https://meetup.com/{hostName}/events/{eventCode}/",
+        error: 'URL format error',
+        message: 'Format: https://meetup.com/{hostName}/events/{eventCode}/',
       },
       { status: 400 }
     );
@@ -52,7 +52,7 @@ async function scrapeMeetup(cleanedUrl: string) {
   try {
     // ✅ Use prebuilt Chromium for Vercel
     const browser = await chromium.launch({
-      args: [...chromiumExecutable.args, "--lang=ms-MY"],
+      args: [...chromiumExecutable.args, '--lang=ms-MY'],
       executablePath: await chromiumExecutable.executablePath(),
     });
 
@@ -62,26 +62,26 @@ async function scrapeMeetup(cleanedUrl: string) {
     const page = await browser.newPage();
 
     await page.goto(cleanedUrl, {
-      waitUntil: "domcontentloaded",
+      waitUntil: 'domcontentloaded',
       timeout: 30000,
     });
 
-    const title = await page.$eval("h1", (el: HTMLElement) =>
+    const title = await page.$eval('h1', (el: HTMLElement) =>
       el.innerText.trim()
     );
 
     const host = await page.$eval(
-      "#event-group-link > div > div.ml-4 > div.text-sm.font-medium.leading-5",
+      '#event-group-link > div > div.ml-4 > div.text-sm.font-medium.leading-5',
       (el: HTMLElement) => el.innerText.trim()
     );
 
-    const dateTime = await page.$eval("time.block", (el: HTMLElement) =>
+    const dateTime = await page.$eval('time.block', (el: HTMLElement) =>
       el.innerText.trim()
     );
 
-    const [dateString, time] = dateTime.split("\n");
+    const [dateString, time] = dateTime.split('\n');
 
-    const date = new Date(new Date(dateString).getTime() + 8 * 60 * 60 * 1000);
+    const date = new Date(new Date(dateString).getTime());
 
     const venueElement = await page.$("a[data-testid='venue-name-link']");
 
@@ -100,25 +100,25 @@ async function scrapeMeetup(cleanedUrl: string) {
         onlineElement
       );
     } else {
-      venue = "Unable to find venue";
+      venue = 'Unable to find venue';
     }
 
     const fee = await page.$eval(
       'div[data-event-label="action-bar"]',
       (container: HTMLElement) => {
-        return container.innerText.includes("FREE") ? "FREE" : "PAID";
+        return container.innerText.includes('FREE') ? 'FREE' : 'PAID';
       }
     );
 
     const availabilityMapping = {
-      "waitlist-btn": "waitlist",
-      "attend-irl-btn": "available",
-      "pass-event-btn": "event_expired",
-      "rsvp-not-open-btn": "not_available",
-      "attend-online-btn": "available_online",
+      'waitlist-btn': 'waitlist',
+      'attend-irl-btn': 'available',
+      'pass-event-btn': 'event_expired',
+      'rsvp-not-open-btn': 'not_available',
+      'attend-online-btn': 'available_online',
     };
 
-    let availability = "unknown";
+    let availability = 'unknown';
 
     for (const [testId, status] of Object.entries(availabilityMapping)) {
       const button = await page.$(`[data-testid="${testId}"]`);
@@ -134,7 +134,7 @@ async function scrapeMeetup(cleanedUrl: string) {
 
     const banner_url = bannerElement
       ? await bannerElement.evaluate(
-          (el: HTMLImageElement) => el.src.split("?")[0]
+          (el: HTMLImageElement) => el.src.split('?')[0]
         )
       : null;
 
@@ -160,10 +160,10 @@ async function scrapeMeetup(cleanedUrl: string) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Scraping error:", error);
+    console.error('Scraping error:', error);
     return Response.json(
       {
-        error: "An error occurred while scraping",
+        error: 'An error occurred while scraping',
         message: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
@@ -176,8 +176,8 @@ async function scrapeLuma(cleanedUrl: string) {
   if (!lumaUrlPattern.test(cleanedUrl)) {
     return Response.json(
       {
-        error: "URL format error",
-        message: "Format: https://lu.ma/{eventCode}/",
+        error: 'URL format error',
+        message: 'Format: https://lu.ma/{eventCode}/',
       },
       { status: 400 }
     );
@@ -186,7 +186,7 @@ async function scrapeLuma(cleanedUrl: string) {
   try {
     // ✅ Use prebuilt Chromium for Vercel
     const browser = await chromium.launch({
-      args: [...chromiumExecutable.args, "--lang=ms-MY"],
+      args: [...chromiumExecutable.args, '--lang=ms-MY'],
       executablePath: await chromiumExecutable.executablePath(),
     });
 
@@ -195,87 +195,87 @@ async function scrapeLuma(cleanedUrl: string) {
 
     const page = await browser.newPage();
     await page.goto(cleanedUrl, {
-      waitUntil: "domcontentloaded",
+      waitUntil: 'domcontentloaded',
       timeout: 30000,
     });
 
     // Event Detail
-    const title = await page.$eval("h1", (el: HTMLElement) =>
+    const title = await page.$eval('h1', (el: HTMLElement) =>
       el.innerText.trim()
     );
 
-    const hostName = await page.$eval(".jsx-3733653009", (el: HTMLElement) =>
+    const hostName = await page.$eval('.jsx-3733653009', (el: HTMLElement) =>
       el.innerText.trim()
     );
 
-    const host = hostName.includes("\n") ? hostName.split("\n")[0] : hostName;
+    const host = hostName.includes('\n') ? hostName.split('\n')[0] : hostName;
 
-    const date = await page.$eval(".jsx-2370077516.title", (el: HTMLElement) =>
+    const date = await page.$eval('.jsx-2370077516.title', (el: HTMLElement) =>
       el.innerText.trim()
     );
 
-    const time = await page.$eval(".jsx-2370077516.desc", (el: HTMLElement) =>
+    const time = await page.$eval('.jsx-2370077516.desc', (el: HTMLElement) =>
       el.innerText.trim()
     );
 
-    const vunueExist = await page.$(".jsx-3850535622");
+    const vunueExist = await page.$('.jsx-3850535622');
 
     let venue;
 
     if (vunueExist) {
-      venue = await page.$eval(".jsx-3850535622", (el: HTMLElement) =>
+      venue = await page.$eval('.jsx-3850535622', (el: HTMLElement) =>
         el.innerText.trim()
       );
     } else {
-      venue = "Register to See Venue";
+      venue = 'Register to See Venue';
     }
 
-    let fee = "FREE";
+    let fee = 'FREE';
 
     const ticketElementText = await page.$eval(
-      ".jsx-2770533236",
+      '.jsx-2770533236',
       (el: HTMLElement) => el.innerText.trim()
     );
 
-    if (ticketElementText == "Get Tickets") {
-      fee = "PAID";
+    if (ticketElementText == 'Get Tickets') {
+      fee = 'PAID';
     }
 
-    let availability = "unknown";
+    let availability = 'unknown';
 
-    const registationClosedElement = await page.$(".jsx-236388194");
+    const registationClosedElement = await page.$('.jsx-236388194');
 
-    const statusElement = await page.$(".jsx-825713363.title");
+    const statusElement = await page.$('.jsx-825713363.title');
 
     if (registationClosedElement) {
-      availability = "not_available";
+      availability = 'not_available';
     } else if (statusElement) {
       const status = await page.evaluate(
         (el) => (el as HTMLElement).innerText.trim(),
         statusElement
       );
       console.log(status);
-      if (status == "Past Event") {
-        availability = "event_expired";
-      } else if (status == "Event Full") {
-        availability = "waitlist";
-      } else if (status == "Approval Required") {
-        availability = "available";
+      if (status == 'Past Event') {
+        availability = 'event_expired';
+      } else if (status == 'Event Full') {
+        availability = 'waitlist';
+      } else if (status == 'Approval Required') {
+        availability = 'available';
       }
     } else {
       const registerButtonText = await page.$eval(
-        ".jsx-681273248 button div.label",
+        '.jsx-681273248 button div.label',
         (el: HTMLElement) => el.innerText.trim()
       );
       if (
-        registerButtonText == "Register" ||
-        registerButtonText == "Get Ticket"
+        registerButtonText == 'Register' ||
+        registerButtonText == 'Get Ticket'
       ) {
-        availability = "available";
+        availability = 'available';
       }
     }
 
-    const bannerElement = await page.$(".jsx-4068354093 img");
+    const bannerElement = await page.$('.jsx-4068354093 img');
 
     const banner_url = bannerElement
       ? await bannerElement.evaluate((el: HTMLImageElement) => el.src)
@@ -302,10 +302,10 @@ async function scrapeLuma(cleanedUrl: string) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Scraping error:", error);
+    console.error('Scraping error:', error);
     return Response.json(
       {
-        error: "An error occurred while scraping",
+        error: 'An error occurred while scraping',
         message: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
