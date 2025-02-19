@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   const cleanedUrl = url.split('?')[0];
 
   try {
-    if (cleanedUrl.includes('meetup.com')) {
+    if (cleanedUrl.includes('meetup.com') || cleanedUrl.includes('meetu.ps')) {
       return await scrapeMeetup(cleanedUrl);
     } else if (cleanedUrl.includes('lu.ma')) {
       return await scrapeLuma(cleanedUrl);
@@ -39,12 +39,13 @@ export async function POST(request: Request) {
 
 async function scrapeMeetup(cleanedUrl: string) {
   const meetupUrlPattern =
-    /^https:\/\/www\.meetup\.com\/[^/]+\/events\/\d+\/?$/;
+    /^(https:\/\/www\.meetup\.com\/[^/]+\/events\/\d+\/?|https:\/\/meetu\.ps\/e\/[A-Za-z0-9]+\/[A-Za-z0-9]+\/i\/?)$/;
   if (!meetupUrlPattern.test(cleanedUrl)) {
     return Response.json(
       {
         error: 'URL format error',
-        message: 'Format: https://meetup.com/{hostName}/events/{eventCode}/',
+        message:
+          'Format: https://meetup.com/{hostName}/events/{eventCode}/ or https://meetu.ps/e/{code}/{code}/i/',
       },
       { status: 400 }
     );
